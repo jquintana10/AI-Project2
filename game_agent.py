@@ -194,10 +194,11 @@ class CustomPlayer:
 
         def max_value(self, game, max_internal_depth):
 
+            maxlegal_moves = game.get_legal_moves(self)
             if self.time_left() < self.TIMER_THRESHOLD:
                 raise Timeout()
 
-            if max_internal_depth == 1:
+            if max_internal_depth == depth:
                 best_score = self.score(self.game, self)
                 return best_score
 
@@ -205,7 +206,7 @@ class CustomPlayer:
                 best_score = self.score(self.game, self)
                 return best_score
 
-            maxlegal_moves = game.get_legal_moves(self)
+
 
             v = float("-inf")
             for move in maxlegal_moves:
@@ -215,10 +216,12 @@ class CustomPlayer:
 
         def min_value(self, game, min_internal_depth):
 
+            minlegal_moves = game.get_legal_moves(self)
+
             if self.time_left() < self.TIMER_THRESHOLD:
                 raise Timeout()
 
-            if min_internal_depth == 1:
+            if min_internal_depth == depth:
                 best_score = self.score(self.game, self)
                 return best_score
 
@@ -226,7 +229,6 @@ class CustomPlayer:
                 best_score = self.score(self.game, self)
                 return best_score
 
-            minlegal_moves = game.get_legal_moves(self)
             v = float("inf")
             for move in minlegal_moves:
                 v = min(v, max_value(self, game.forecast_move(move), min_internal_depth + 1))
