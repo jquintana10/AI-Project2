@@ -183,7 +183,7 @@ class CustomPlayer:
         -----
             (1) You MUST use the `self.score()` method for board evaluation
                 to pass the project unit tests; you cannot call any other
-                evaluation function directly."""
+                evaluation function directly.
 
 
 
@@ -192,70 +192,95 @@ class CustomPlayer:
         self.maximizing_player = maximizing_player
         legal_moves = game.get_legal_moves(self)
 
-        def max_value(self, game, max_internal_depth):
 
-            maxlegal_moves = game.get_legal_moves(self)
+        def max_value(self, maxgame, maxdepth):
+
+            maxlegal_moves = maxgame.get_legal_moves(self)
+
             if self.time_left() < self.TIMER_THRESHOLD:
                 raise Timeout()
 
-            if max_internal_depth == depth:
-                best_score = self.score(self.game, self)
+            print("depth:", depth)
+            print("depth max:", depth)
+            if maxdepth == depth:
+                best_score = self.score(maxgame, self)
+                print("sali")
                 return best_score
 
             if not maxlegal_moves:
-                best_score = self.score(self.game, self)
+                best_score = self.score(maxgame, self)
                 return best_score
-
-
 
             v = float("-inf")
             for move in maxlegal_moves:
-                v = max(v, min_value(self, game.forecast_move(move), max_internal_depth + 1))
-            print("v", v)
+                v = max(v, min_value(self, maxgame.forecast_move(move), maxdepth+1))
+
+            #print("max v", v)
+
             return v
 
-        def min_value(self, game, min_internal_depth):
+        def min_value(self, mingame, mindepth):
 
-            minlegal_moves = game.get_legal_moves(self)
+            minlegal_moves = mingame.get_legal_moves(self)
 
             if self.time_left() < self.TIMER_THRESHOLD:
                 raise Timeout()
 
-            if min_internal_depth == depth:
-                best_score = self.score(self.game, self)
+            print("depth:", depth)
+            print("min depth:", mindepth)
+            if mindepth == depth:
+                best_score = self.score(mingame, self)
+                print("sali:", best_score)
                 return best_score
 
+            print("Never")
             if not minlegal_moves:
-                best_score = self.score(self.game, self)
+                best_score = self.score(mingame, self)
                 return best_score
 
-            v = float("inf")
+            best_score = float("inf")
+            print("MinLegalmove:", minlegal_moves)
             for move in minlegal_moves:
-                v = min(v, max_value(self, game.forecast_move(move), min_internal_depth + 1))
-            return v
+                print("MinMove:", move)
+                best_score = min(best_score, max_value(self, mingame.forecast_move(move), mindepth+1))
+            print("regrese con v:", best_score)
+            return best_score
 
 
         # TODO: finish this function!
         if not legal_moves:
             return (-1, -1)
 
-        if maximizing_player:
-            score = float("-inf")
-            for m in legal_moves:
-                v = min_value(self, game.forecast_move(m), 1)
-                if (v > score):
-                    score = v
-                    move = m
+        score = float("-inf")
+        print("Legal Move Principal", legal_moves)
+        for m in legal_moves:
+            print("move in principal:", m)
+            v = min_value(self, game.forecast_move(m), 1)
 
-                    # score, move = max([(min_value(game.forecast_move(m),1),m) for m in legal_moves])
-        else:
-            score = float("inf")
-            for m in legal_moves:
-                v = max_value(self, game.forecast_move(m), 1)
-                if (v < score):
-                    score = v
-                    move = m
-                    # score, move = min([(max_value(game.forecast_move(m),1), m) for m in legal_moves])
+            if (v > score):
+                score = v
+                move = m
+            print("Score", score)
+        return score, move """
+
+        self.game = game
+        self.depth = depth
+        self.maximizing_player = maximizing_player
+        legal_moves = game.get_legal_moves(self)
+
+        # TODO: finish this function!
+        if not legal_moves:
+            return (-1, -1)
+
+        score = float("-inf")
+        for m in legal_moves:
+            v = self.score(self.game.forecast_move(m),self)
+
+            if (v > score):
+                score = v
+                move = m
+            print("Score:", score)
+            print("Move:", move)
         return score, move
 
 
@@ -298,10 +323,8 @@ class CustomPlayer:
             (1) You MUST use the `self.score()` method for board evaluation
                 to pass the project unit tests; you cannot call any other
                 evaluation function directly.
-        """
 
-
-        self.game = game
+         self.game = game
         self.depth = depth
         self.alpha = alpha
         self.beta = beta
@@ -310,6 +333,8 @@ class CustomPlayer:
 
         def max_value(self, game, alpha, beta):
 
+            maxlegal_moves = self.game.get_legal_moves(self)
+
             if self.time_left() < self.TIMER_THRESHOLD:
                 raise Timeout()
 
@@ -317,18 +342,17 @@ class CustomPlayer:
                 best_score = self.score(self.game, self)
                 return best_score
 
-            maxlegal_moves = game.get_legal_moves(self)
-
             v = float("-inf")
             for move in maxlegal_moves:
                 v = max(v, min_value(self, game.forecast_move(move), alpha, beta))
                 if v >= beta:
                     return v
                 alpha = max(alpha, v)
-            print("v", v)
             return v
 
         def min_value(self, game, alpha, beta):
+
+            minlegal_moves = self.game.get_legal_moves(self)
 
             if self.time_left() < self.TIMER_THRESHOLD:
                 raise Timeout()
@@ -337,7 +361,6 @@ class CustomPlayer:
                 best_score = self.score(self.game, self)
                 return best_score
 
-            minlegal_moves = game.get_legal_moves(self)
             v = float("inf")
             for move in minlegal_moves:
                 v = min(v, max_value(self, game.forecast_move(move), alpha, beta))
@@ -369,4 +392,4 @@ class CustomPlayer:
                     move = m
                     # score, move = min([(max_value(game.forecast_move(m),alpha, beta), m) for m in legal_moves])
 
-        return score, move
+        return score, move"""
